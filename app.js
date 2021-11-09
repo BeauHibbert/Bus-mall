@@ -27,7 +27,6 @@ const renderNewProduct = function(leftIndex, middleIndex, rightIndex) {
 }
 
 const pickNewProducts = function() {
-  console.log('ProductImage.allImages: ', ProductImage.allImages);
   const leftIndex = Math.floor(Math.random() * ProductImage.allImages.length);
   let middleIndex;
   let rightIndex;
@@ -44,7 +43,7 @@ const pickNewProducts = function() {
 }
 
 const handleClick = function(event) {
-  if (totalClicks < 5) {
+  if (totalClicks < 25) {
     let clickedImage = event.target;
     let id = clickedImage.id;
     if (id === 'img1' || id === 'img2' || id === 'img3') {
@@ -67,7 +66,7 @@ const handleClick = function(event) {
 
 
   totalClicks++;
-  if (totalClicks === 5) {
+  if (totalClicks === 25) {
     imgContainer.removeEventListener('click', handleClick);
 
     let resultsList = document.getElementById('results-list');
