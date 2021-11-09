@@ -50,34 +50,34 @@ const handleClick = function(event) {
     if (id === 'img1' || id === 'img2' || id === 'img3') {
       if (id === 'img1') {
         currentImage1.clicks++;
-        // console.log(currentImage1.productName + ' clicks: ', currentImage1.clicks)
       }
       if (id === 'img2') {
         currentImage2.clicks++;
-        // console.log(currentImage2.productName + ' clicks: ', currentImage2.clicks)
       }
       if (id === 'img3') {
         currentImage3.clicks++;
-        // console.log(currentImage3.productName + ' clicks: ', currentImage3.clicks)
       }
       currentImage1.timesShown++;
-      // console.log(currentImage1.productName + ' times shown: ', currentImage1.timesShown);
       currentImage2.timesShown++;
-      // console.log(currentImage2.productName + ' times shown: ', currentImage2.timesShown);
       currentImage3.timesShown++;
-      // console.log(currentImage3.productName + ' times shown: ', currentImage3.timesShown);
     }
     pickNewProducts();
   }
 
-  for(let i=0; i < ProductImage.allImages.length; i++) {
-     console.log(ProductImage.allImages[i].productName + ' clicks: ', ProductImage.allImages[i].clicks);
-     console.log(ProductImage.allImages[i].productName + ' times shown: ', ProductImage.allImages[i].timesShown);
-  }
+
 
   totalClicks++;
   if (totalClicks === 5) {
     imgContainer.removeEventListener('click', handleClick);
+
+    let resultsList = document.getElementById('results-list');
+
+    for(let i=0; i < ProductImage.allImages.length; i++) {
+      let listItem = document.createElement('li');
+      listItem.textContent = ProductImage.allImages[i].productName + ' received ' + ProductImage.allImages[i].clicks + ' clicks and was shown ' + ProductImage.allImages[i].timesShown + ' times.'
+
+      resultsList.appendChild(listItem);
+    }
   }
 }
 
