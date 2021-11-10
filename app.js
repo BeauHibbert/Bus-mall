@@ -1,15 +1,8 @@
 'use strict';
 
 // global variables
-let imgContainer = document.getElementById('image-container');
-let img1 = document.getElementById('img1');
-let img2 = document.getElementById('img2');
-let img3 = document.getElementById('img3');
+let currentRound = 0;
 let totalClicks = 0;
-
-let currentImage1 = null;
-let currentImage2 = null;
-let currentImage3 = null;
 
 const ProductImage = function(productName, filePath) {
   this.productName = productName;
@@ -19,27 +12,50 @@ const ProductImage = function(productName, filePath) {
   ProductImage.allImages.push(this);
 }
 ProductImage.allImages = [];
+ProductImage.currentLeftImage = null;
+ProductImage.currentMiddleImage = null;
+ProductImage.currentRightImage = null;
 
-const renderNewProduct = function(leftIndex, middleIndex, rightIndex) {
-  img1.src = ProductImage.allImages[leftIndex].filePath;
-  img2.src = ProductImage.allImages[middleIndex].filePath;
-  img3.src = ProductImage.allImages[rightIndex].filePath;
+ProductImage.prototype.render = function(position) {
+  const imgElement = document.getElementById(position + '-img');
+  imgElement.src = this.filePath;
+  imgElement.alt = this.productName;
+  this.timesShown++;
+}
+
+function getRandomImage() {
+  const randomIndex = Math.floor(Math.random() * ProductImage.allImages.length);
+  return ProductImage.allImages[randomIndex];
 }
 
 const pickNewProducts = function() {
-  const leftIndex = Math.floor(Math.random() * ProductImage.allImages.length);
-  let middleIndex;
-  let rightIndex;
+  let oldLeftImage = ProductImage.currentLeftImage
+  let oldMiddleImage = ProductImage.currentMiddleImage
+  let oldRightImage = ProductImage.currentRightImage
 
   do {
-    middleIndex = Math.floor(Math.random() * ProductImage.allImages.length);
-    rightIndex = Math.floor(Math.random() * ProductImage.allImages.length);
-  } while(leftIndex === middleIndex || leftIndex === rightIndex || rightIndex === middleIndex);
+    ProductImage.currentLeftImage = getRandomImage();
+    ProductImage.currentMiddleImage = getRandomImage();
+    ProductImage.currentRightImage = getRandomImage();
+  } while (
+    ProductImage.currentLeftImage === oldLeftImage || 
+    ProductImage.currentLeftImage === oldMiddleImage || 
+    ProductImage.currentLeftImage === oldRightImage || 
+    ProductImage.currentMiddleImage === oldLeftImage ||
+    ProductImage.currentMiddleImage === oldMiddleImage ||
+    ProductImage.currentMiddleImage === oldRightImage ||
+    ProductImage.currentRightImage === oldLeftImage ||
+    ProductImage.currentRightImage === oldMiddleImage ||
+    ProductImage.currentRightImage === oldRightImage ||
+    ProductImage.currentLeftImage === ProductImage.currentMiddleImage ||
+    ProductImage.currentMiddleImage === ProductImage.currentRightImage ||
+    ProductImage.currentLeftImage == ProductImage.currentRightImage
+  );
 
-  currentImage1 = ProductImage.allImages[leftIndex];
-  currentImage2 = ProductImage.allImages[middleIndex];
-  currentImage3 = ProductImage.allImages[rightIndex];
-  renderNewProduct(leftIndex,middleIndex,rightIndex);
+  currentLeftImage = ProductImage.allImages[leftImage];
+  currentMiddleImage = ProductImage.allImages[middleImage];
+  currentRightImage = ProductImage.allImages[rightImage];
+  renderNewProduct(leftImage,middleImage,rightImage);
 }
 
 const handleClick = function(event) {
@@ -48,22 +64,20 @@ const handleClick = function(event) {
     let id = clickedImage.id;
     if (id === 'img1' || id === 'img2' || id === 'img3') {
       if (id === 'img1') {
-        currentImage1.clicks++;
+        currentLeftImage.clicks++;
       }
       if (id === 'img2') {
-        currentImage2.clicks++;
+        currentMiddleImage.clicks++;
       }
       if (id === 'img3') {
-        currentImage3.clicks++;
+        currentRightImage.clicks++;
       }
-      currentImage1.timesShown++;
-      currentImage2.timesShown++;
-      currentImage3.timesShown++;
+      currentLeftImage.timesShown++;
+      currentMiddleImage.timesShown++;
+      currentRightImage.timesShown++;
     }
     pickNewProducts();
   }
-
-
 
   totalClicks++;
   if (totalClicks === 25) {
@@ -102,8 +116,8 @@ new ProductImage('unicorn', './assets/unicorn.jpg');
 new ProductImage('water-can', './assets/water-can.jpg');
 new ProductImage('wine-glass', './assets/wine-glass.jpg');
 
-currentImage1 = ProductImage.allImages[7];
-currentImage2 = ProductImage.allImages[5];
-currentImage3 = ProductImage.allImages[9];
+currentLeftImage = ProductImage.allImages[7];
+currentMiddleImage = ProductImage.allImages[5];
+currentRightImage = ProductImage.allImages[9];
 
 pickNewProducts();
