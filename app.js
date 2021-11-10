@@ -1,15 +1,7 @@
 'use strict';
 
 // global variables
-let imgContainer = document.getElementById('image-container');
-let img1 = document.getElementById('img1');
-let img2 = document.getElementById('img2');
-let img3 = document.getElementById('img3');
-let totalClicks = 0;
-
-let currentImage1 = null;
-let currentImage2 = null;
-let currentImage3 = null;
+let currentRound = 0;
 
 const ProductImage = function(productName, filePath) {
   this.productName = productName;
@@ -19,91 +11,173 @@ const ProductImage = function(productName, filePath) {
   ProductImage.allImages.push(this);
 }
 ProductImage.allImages = [];
+ProductImage.currentLeftImage = null;
+ProductImage.currentMiddleImage = null;
+ProductImage.currentRightImage = null;
 
-const renderNewProduct = function(leftIndex, middleIndex, rightIndex) {
-  img1.src = ProductImage.allImages[leftIndex].filePath;
-  img2.src = ProductImage.allImages[middleIndex].filePath;
-  img3.src = ProductImage.allImages[rightIndex].filePath;
+ProductImage.prototype.render = function(position) {
+  const imgElement = document.getElementById(position + '-img');
+  imgElement.src = this.filePath;
+  imgElement.alt = this.productName;
+  this.timesShown++;
 }
 
-const pickNewProducts = function() {
-  const leftIndex = Math.floor(Math.random() * ProductImage.allImages.length);
-  let middleIndex;
-  let rightIndex;
+function getRandomImage() {
+  const randomIndex = Math.floor(Math.random() * ProductImage.allImages.length);
+  return ProductImage.allImages[randomIndex];
+}
+
+function pickNewProducts() {
+  let oldLeftImage = ProductImage.currentLeftImage
+  let oldMiddleImage = ProductImage.currentMiddleImage
+  let oldRightImage = ProductImage.currentRightImage
 
   do {
-    middleIndex = Math.floor(Math.random() * ProductImage.allImages.length);
-    rightIndex = Math.floor(Math.random() * ProductImage.allImages.length);
-  } while(leftIndex === middleIndex || leftIndex === rightIndex || rightIndex === middleIndex);
-
-  currentImage1 = ProductImage.allImages[leftIndex];
-  currentImage2 = ProductImage.allImages[middleIndex];
-  currentImage3 = ProductImage.allImages[rightIndex];
-  renderNewProduct(leftIndex,middleIndex,rightIndex);
+    ProductImage.currentLeftImage = getRandomImage();
+    ProductImage.currentMiddleImage = getRandomImage();
+    ProductImage.currentRightImage = getRandomImage();
+  } while (
+    ProductImage.currentLeftImage === oldLeftImage || 
+    ProductImage.currentLeftImage === oldMiddleImage || 
+    ProductImage.currentLeftImage === oldRightImage || 
+    ProductImage.currentMiddleImage === oldLeftImage ||
+    ProductImage.currentMiddleImage === oldMiddleImage ||
+    ProductImage.currentMiddleImage === oldRightImage ||
+    ProductImage.currentRightImage === oldLeftImage ||
+    ProductImage.currentRightImage === oldMiddleImage ||
+    ProductImage.currentRightImage === oldRightImage ||
+    ProductImage.currentLeftImage === ProductImage.currentMiddleImage ||
+    ProductImage.currentMiddleImage === ProductImage.currentRightImage ||
+    ProductImage.currentLeftImage == ProductImage.currentRightImage
+  );
 }
 
-const handleClick = function(event) {
-  if (totalClicks < 25) {
-    let clickedImage = event.target;
-    let id = clickedImage.id;
-    if (id === 'img1' || id === 'img2' || id === 'img3') {
-      if (id === 'img1') {
-        currentImage1.clicks++;
-      }
-      if (id === 'img2') {
-        currentImage2.clicks++;
-      }
-      if (id === 'img3') {
-        currentImage3.clicks++;
-      }
-      currentImage1.timesShown++;
-      currentImage2.timesShown++;
-      currentImage3.timesShown++;
+function renderNewProducts() {
+  ProductImage.currentLeftImage.render('left');
+  ProductImage.currentMiddleImage.render('middle');
+  ProductImage.currentRightImage.render('right');
+}
+
+function handleClick(event) {
+  let clickedImage = event.target;
+  let id = clickedImage.id;
+  if (id === 'left-img' || id === 'middle-img' || id === 'right-img') {
+    if (id === 'left-img') {
+      ProductImage.currentLeftImage.clicks++;
     }
+    if (id === 'middle-img') {
+      ProductImage.currentMiddleImage.clicks++;
+    }
+    if (id === 'right-img') {
+      ProductImage.currentRightImage.clicks++;
+    }
+    ProductImage.currentLeftImage.timesShown++;
+    ProductImage.currentMiddleImage.timesShown++;
+    ProductImage.currentRightImage.timesShown++;
+  }
+
+  currentRound++;
+
+  if (currentRound === 25) {
+    document.getElementById('results-container').hidden = false;
+    destroyEventListener();
+    createChart();
+    createList();
+  } else {
     pickNewProducts();
-  }
-
-
-
-  totalClicks++;
-  if (totalClicks === 25) {
-    imgContainer.removeEventListener('click', handleClick);
-
-    let resultsList = document.getElementById('results-list');
-
-    for(let i=0; i < ProductImage.allImages.length; i++) {
-      let listItem = document.createElement('li');
-      listItem.textContent = ProductImage.allImages[i].productName + ' received ' + ProductImage.allImages[i].clicks + ' clicks and was shown ' + ProductImage.allImages[i].timesShown + ' times.'
-
-      resultsList.appendChild(listItem);
-    }
+    renderNewProducts();
   }
 }
 
-imgContainer.addEventListener('click', handleClick);
+function createChart() {
+  const productNameArray = [];
+  const productClicksArray = [];
 
-new ProductImage('bag', './assets/bag.jpg');
-new ProductImage('banana', './assets/banana.jpg');
-new ProductImage('bathroom', './assets/bathroom.jpg');
-new ProductImage('boots', './assets/boots.jpg');
-new ProductImage('breakfast', './assets/breakfast.jpg');
-new ProductImage('bubblegum', './assets/bubblegum.jpg');
-new ProductImage('chair', './assets/chair.jpg');
-new ProductImage('cthulhu', './assets/cthulhu.jpg');
-new ProductImage('dog-duck', './assets/dog-duck.jpg');
-new ProductImage('dragon', './assets/dragon.jpg');
-new ProductImage('pen', './assets/pen.jpg');
-new ProductImage('pet-sweep', './assets/pet-sweep.jpg');
-new ProductImage('scissors', './assets/scissors.jpg');
-new ProductImage('shark', './assets/shark.jpg');
-new ProductImage('sweep', './assets/sweep.png');
-new ProductImage('tauntaun', './assets/tauntaun.jpg');
-new ProductImage('unicorn', './assets/unicorn.jpg');
-new ProductImage('water-can', './assets/water-can.jpg');
-new ProductImage('wine-glass', './assets/wine-glass.jpg');
+  for(let i=0; i < ProductImage.allImages.length; i++) {
+    const product = ProductImage.allImages[i];
 
-currentImage1 = ProductImage.allImages[7];
-currentImage2 = ProductImage.allImages[5];
-currentImage3 = ProductImage.allImages[9];
+    const singleProductName = product.productName;
+    productNameArray.push(singleProductName);
 
-pickNewProducts();
+    const singleProductClicks = product.clicks;
+    productClicksArray.push(singleProductClicks);
+  }
+
+  console.log('productNameArray: ', productNameArray);
+  console.log('productClicksArray: ', productClicksArray);
+
+  const ctx = document.getElementById('results-chart').getContext('2d');
+  const productImageChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: productNameArray,
+      datasets: [{
+        label: 'Product Votes',
+        backgroundColor: 'rgb(132, 255, 99)',
+        borderColor: 'rgb(0, 0, 0)',
+        data: productClicksArray
+      }]
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+  });
+}
+
+function createList() {
+  let resultsList = document.getElementById('results-list');
+
+  for(let i=0; i < ProductImage.allImages.length; i++) {
+    let listItem = document.createElement('li');
+    listItem.textContent = ProductImage.allImages[i].productName + ' received ' + ProductImage.allImages[i].clicks + ' clicks and was shown ' + ProductImage.allImages[i].timesShown + ' times.'
+
+    resultsList.appendChild(listItem);
+  }
+}
+
+function createEventListener() {
+  const imgContainer = document.getElementById('image-container');
+  imgContainer.addEventListener('click', handleClick);
+}
+
+function destroyEventListener() {
+  const imgContainer = document.getElementById('image-container');
+  imgContainer.removeEventListener('click', handleClick);
+}
+
+function createProductImages(){
+  new ProductImage('bag', './assets/bag.jpg');
+  new ProductImage('banana', './assets/banana.jpg');
+  new ProductImage('bathroom', './assets/bathroom.jpg');
+  new ProductImage('boots', './assets/boots.jpg');
+  new ProductImage('breakfast', './assets/breakfast.jpg');
+  new ProductImage('bubblegum', './assets/bubblegum.jpg');
+  new ProductImage('chair', './assets/chair.jpg');
+  new ProductImage('cthulhu', './assets/cthulhu.jpg');
+  new ProductImage('dog-duck', './assets/dog-duck.jpg');
+  new ProductImage('dragon', './assets/dragon.jpg');
+  new ProductImage('pen', './assets/pen.jpg');
+  new ProductImage('pet-sweep', './assets/pet-sweep.jpg');
+  new ProductImage('scissors', './assets/scissors.jpg');
+  new ProductImage('shark', './assets/shark.jpg');
+  new ProductImage('sweep', './assets/sweep.png');
+  new ProductImage('tauntaun', './assets/tauntaun.jpg');
+  new ProductImage('unicorn', './assets/unicorn.jpg');
+  new ProductImage('water-can', './assets/water-can.jpg');
+  new ProductImage('wine-glass', './assets/wine-glass.jpg');
+}
+
+function start() {
+  createEventListener();
+  createProductImages();
+  pickNewProducts();
+  renderNewProducts();
+}
+
+start();

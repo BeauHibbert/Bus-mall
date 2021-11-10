@@ -7,15 +7,17 @@
       <h1>Bus Mall</h1>
       <p>Click the item you'd most like to purchase in each image set.</p>
       <div id="image-container">
-        <img src="" alt="" id="img1">
-        <img src="" alt="" id="img2">
-        <img src="" alt="" id="img3">
+        <img src="" alt="" id="left-img">
+        <img src="" alt="" id="middle-img">
+        <img src="" alt="" id="right-img">
       </div>
-      <div id="results-container">
+      <div hidden id="results-container">
         <ul id="results-list"></ul>
+        <canvas id="results-chart" width="500" height="500"></canvas>
       </div>
     </main>
     <footer></footer>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
