@@ -81,11 +81,53 @@ function handleClick(event) {
   if (currentRound === 25) {
     document.getElementById('results-container').hidden = false;
     destroyEventListener();
+    createChart();
     createList();
   } else {
     pickNewProducts();
     renderNewProducts();
   }
+}
+
+function createChart() {
+  const productNameArray = [];
+  const productClicksArray = [];
+
+  for(let i=0; i < ProductImage.allImages.length; i++) {
+    const product = ProductImage.allImages[i];
+
+    const singleProductName = product.productName;
+    productNameArray.push(singleProductName);
+
+    const singleProductClicks = product.clicks;
+    productClicksArray.push(singleProductClicks);
+  }
+
+  console.log('productNameArray: ', productNameArray);
+  console.log('productClicksArray: ', productClicksArray);
+
+  const ctx = document.getElementById('results-chart').getContext('2d');
+  const productImageChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: productNameArray,
+      datasets: [{
+        label: 'Product Votes',
+        backgroundColor: 'rgb(132, 255, 99)',
+        borderColor: 'rgb(0, 0, 0)',
+        data: productClicksArray
+      }]
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+  });
 }
 
 function createList() {
