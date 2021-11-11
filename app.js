@@ -58,6 +58,25 @@ function renderNewProducts() {
   ProductImage.currentRightImage.render('right');
 }
 
+function populateProductImages() {
+  const productsInLocalStorage = localStorage.getItem('products');
+  if(productsInLocalStorage) {
+    recreateStoredProducts(productsInLocalStorage);
+  } else {
+    createProductImages();
+  }
+}
+
+function recreateStoredProducts(storedItem) {
+  const rawProducts = JSON.parse(storedItem);
+  for(let i = 0; i < rawProducts.length; i++) {
+    const rawProduct = rawProducts[i];
+    const productInstance = new ProductImage(rawProduct.productName, rawProduct.filePath);
+    productInstance.clicks = rawProduct.clicks;
+    productInstance.timesShown = rawProduct.timesShown;
+  }
+}
+
 function handleClick(event) {
   let clickedImage = event.target;
   let id = clickedImage.id;
@@ -79,10 +98,12 @@ function handleClick(event) {
   currentRound++;
 
   if (currentRound === 25) {
+    console.log('allimages', ProductImage.allImages)
     document.getElementById('results-container').hidden = false;
     destroyEventListener();
     createChart();
     createList();
+    localStorage.setItem('products', JSON.stringify(ProductImage.allImages));
   } else {
     pickNewProducts();
     renderNewProducts();
@@ -175,7 +196,7 @@ function createProductImages(){
 
 function start() {
   createEventListener();
-  createProductImages();
+  populateProductImages();
   pickNewProducts();
   renderNewProducts();
 }
