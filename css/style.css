@@ -2,3 +2,28 @@
   height: 200px; 
   width: 200px;
 }
+
+body {
+  width: 80%;
+  margin: 0 auto;
+  background-color: burlywood;
+}
+
+main {
+  text-align: center;
+  margin-top: 10px
+}
+
+h1 {
+  font-size: 70px;
+}
+
+ul {
+  list-style-type: none;
+  padding-left: 0px;
+}
+
+#results-chart {
+  width: 400px;
+  height: 400px;
+}

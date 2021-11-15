@@ -4,6 +4,7 @@
 let currentRound = 0;
 
 const ProductImage = function(productName, filePath) {
+  const test = true;
   this.productName = productName;
   this.filePath = filePath;
   this.timesShown = 0;
@@ -118,6 +119,7 @@ function createChart() {
     const product = ProductImage.allImages[i];
 
     const singleProductName = product.productName;
+    console.log("product.test", product.test)
     productNameArray.push(singleProductName);
 
     const singleProductClicks = product.clicks;
@@ -134,7 +136,7 @@ function createChart() {
       labels: productNameArray,
       datasets: [{
         label: 'Product Votes',
-        backgroundColor: 'rgb(132, 255, 99)',
+        backgroundColor: 'rgb(32, 42, 68)',
         borderColor: 'rgb(0, 0, 0)',
         data: productClicksArray
       }]
